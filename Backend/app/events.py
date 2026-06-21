@@ -35,11 +35,12 @@ class STTChunkEvent:
 
     type: Literal["stt_chunk"]
     transcript: str
+    speaker: str
     ts: int
 
     @classmethod
-    def create(cls, transcript: str) -> "STTChunkEvent":
-        return cls(type="stt_chunk", transcript=transcript, ts=_now_ms())
+    def create(cls, transcript: str, speaker: str = "UNKNOWN") -> "STTChunkEvent":
+        return cls(type="stt_chunk", transcript=transcript, speaker=speaker, ts=_now_ms())
 
 
 @dataclass
@@ -48,11 +49,12 @@ class STTOutputEvent:
 
     type: Literal["stt_output"]
     transcript: str
+    speaker: str
     ts: int
 
     @classmethod
-    def create(cls, transcript: str) -> "STTOutputEvent":
-        return cls(type="stt_output", transcript=transcript, ts=_now_ms())
+    def create(cls, transcript: str, speaker: str = "UNKNOWN") -> "STTOutputEvent":
+        return cls(type="stt_output", transcript=transcript, speaker=speaker, ts=_now_ms())
 
 
 STTEvent = Union[STTChunkEvent, STTOutputEvent]
@@ -109,9 +111,9 @@ def event_to_dict(event: VoiceAgentEvent) -> dict:
         audio_b64 = base64.b64encode(event.audio).decode("ascii")
         return {"type": event.type, "audio": audio_b64, "ts": event.ts}
     if isinstance(event, STTChunkEvent):
-        return {"type": event.type, "transcript": event.transcript, "ts": event.ts}
+        return {"type": event.type, "transcript": event.transcript, "speaker": event.speaker, "ts": event.ts}
     if isinstance(event, STTOutputEvent):
-        return {"type": event.type, "transcript": event.transcript, "ts": event.ts}
+        return {"type": event.type, "transcript": event.transcript, "speaker": event.speaker, "ts": event.ts}
     if isinstance(event, AgentChunkEvent):
         return {"type": event.type, "text": event.text, "ts": event.ts}
     if isinstance(event, AgentEndEvent):
