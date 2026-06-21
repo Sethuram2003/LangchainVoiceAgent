@@ -19,31 +19,20 @@ from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
 
 from app.events import AgentChunkEvent, AgentEndEvent, VoiceAgentEvent
+from app.core.agent.prompt import SYSTEM_PROMPT
 
 load_dotenv()
 
 _OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 _OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "glm-5.2:cloud")
 
-# Build the agent once at import time.
 _agent = create_agent(
     model=ChatOllama(
         model=_OLLAMA_MODEL,
         base_url=_OLLAMA_BASE_URL,
     ),
     tools=[],
-    system_prompt=(
-        "You are a helpful voice assistant for a sandwich shop. "
-        "You are talking to one or more people over a voice call. "
-        "The transcription includes a speaker label (SPEAKER_A, SPEAKER_B, etc.) "
-        "for each turn. Use the speaker labels to track who is saying what. "
-        "If a new speaker joins mid-conversation, acknowledge them naturally. "
-        "Address people by their speaker label when there are multiple speakers. "
-        "When there is only one speaker (SPEAKER_A), respond normally without labels. "
-        "Be concise and friendly. "
-        "Do NOT use emojis, special characters, or markdown. "
-        "Your responses will be read by a text-to-speech engine."
-    ),
+    system_prompt=SYSTEM_PROMPT,
     checkpointer=InMemorySaver(),
 )
 
@@ -55,13 +44,10 @@ async def agent_stream(
     config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
     async for event in event_stream:
-        # Always pass upstream events through.
         yield event
 
-        # On a final transcript, run the agent and stream tokens.
         if event.type == "stt_output":
-            # Prefix the message with the speaker label so the LLM knows
-            # who is talking.
+
             speaker = event.speaker or "UNKNOWN"
             msg_content = f"[{speaker}] {event.transcript}"
             full_text = ""
