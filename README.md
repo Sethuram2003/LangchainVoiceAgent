@@ -79,20 +79,20 @@ WebSocket (raw PCM16 audio in)
         │
         ▼
 ┌───────────────────┐
-│   stt_stream()     │  AssemblyAI Universal-Streaming v3
-│   (AssemblyAI)      │  → STTChunkEvent (partial) / STTOutputEvent (final, diarized)
+│   stt_stream()    │  AssemblyAI Universal-Streaming v3
+│   (AssemblyAI)    │  → STTChunkEvent (partial) / STTOutputEvent (final, diarized)
 └───────────────────┘
         │  (passes through + injects)
         ▼
 ┌───────────────────┐
-│   agent_stream()    │  LangChain agent (create_agent) backed by Ollama
-│   (LangChain)       │  → AgentChunkEvent (token stream) / AgentEndEvent (full reply)
+│   agent_stream()  │  LangChain agent (create_agent) backed by Ollama
+│   (LangChain)     │  → AgentChunkEvent (token stream) / AgentEndEvent (full reply)
 └───────────────────┘
         │  (passes through + injects)
         ▼
 ┌───────────────────┐
-│   tts_stream()      │  Cartesia WebSocket TTS
-│   (Cartesia)         │  → TTSChunkEvent (raw PCM16 audio out)
+│   tts_stream()    │  Cartesia WebSocket TTS
+│   (Cartesia)      │  → TTSChunkEvent (raw PCM16 audio out)
 └───────────────────┘
         │
         ▼
