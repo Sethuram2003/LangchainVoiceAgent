@@ -324,6 +324,4 @@ If this saved you time wiring up a real-time voice pipeline, consider:
 
 *A real-time pipeline that doesn't just transcribe a call — it tracks who's actually talking.*
 
-[![Star History Chart](https://api.star-history.com/svg?repos=sethuram2003/LangchainVoiceAgent&type=Date)](https://star-history.com/#sethuram2003/LangchainVoiceAgent&Date)
-
 </div>
