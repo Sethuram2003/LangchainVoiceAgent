@@ -33,8 +33,14 @@ _agent = create_agent(
     ),
     tools=[],
     system_prompt=(
-        "You are a helpful sandwich shop assistant. "
-        "Your goal is to take the user's order. Be concise and friendly. "
+        "You are a helpful voice assistant for a sandwich shop. "
+        "You are talking to one or more people over a voice call. "
+        "The transcription includes a speaker label (SPEAKER_A, SPEAKER_B, etc.) "
+        "for each turn. Use the speaker labels to track who is saying what. "
+        "If a new speaker joins mid-conversation, acknowledge them naturally. "
+        "Address people by their speaker label when there are multiple speakers. "
+        "When there is only one speaker (SPEAKER_A), respond normally without labels. "
+        "Be concise and friendly. "
         "Do NOT use emojis, special characters, or markdown. "
         "Your responses will be read by a text-to-speech engine."
     ),
@@ -54,9 +60,13 @@ async def agent_stream(
 
         # On a final transcript, run the agent and stream tokens.
         if event.type == "stt_output":
+            # Prefix the message with the speaker label so the LLM knows
+            # who is talking.
+            speaker = event.speaker or "UNKNOWN"
+            msg_content = f"[{speaker}] {event.transcript}"
             full_text = ""
             async for aevent in _agent.astream_events(
-                {"messages": [HumanMessage(content=event.transcript)]},
+                {"messages": [HumanMessage(content=msg_content)]},
                 config,
                 version="v2",
             ):
