@@ -100,7 +100,7 @@
 <body>
 <div class="container">
   <h1>Voice Agent</h1>
-  <div class="subtitle">AssemblyAI STT → Ollama Agent → Cartesia TTS</div>
+  <div class="subtitle">AssemblyAI STT (diarized) → Ollama Agent → Cartesia TTS</div>
 
   <div id="status" class="status">Not connected</div>
 
@@ -114,6 +114,11 @@
   <div class="section">
     <div class="section-label">You said (final)</div>
     <div id="finalTranscript" class="transcript final">—</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Conversation log</div>
+    <div id="conversationLog" class="transcript final" style="max-height: 200px; overflow-y: auto;"></div>
   </div>
 
   <div class="section">
@@ -149,6 +154,46 @@ const partialEl = document.getElementById("partialTranscript");
 const finalEl = document.getElementById("finalTranscript");
 const agentEl = document.getElementById("agentResponse");
 const logEl = document.getElementById("eventLog");
+const convoEl = document.getElementById("conversationLog");
+
+// Color map for speaker labels
+const speakerColors = {
+  A: "#4a9eff",
+  B: "#f0a040",
+  C: "#a0e040",
+  D: "#e040a0",
+  UNKNOWN: "#888",
+};
+
+function speakerColor(label) {
+  // speaker_label is a single letter like "A", "B", etc.
+  if (speakerColors[label]) return speakerColors[label];
+  return "#888";
+}
+
+function addConversationLine(speaker, text) {
+  const color = speakerColor(speaker);
+  const line = document.createElement("div");
+  line.style.marginBottom = "4px";
+  line.innerHTML = `<span style="color:${color}; font-weight:600;">SPEAKER_${speaker}:</span> ${text}`;
+  convoEl.appendChild(line);
+  convoEl.scrollTop = convoEl.scrollHeight;
+  while (convoEl.children.length > 100) {
+    convoEl.removeChild(convoEl.firstChild);
+  }
+}
+
+function addAgentLine(text) {
+  const line = document.createElement("div");
+  line.style.marginBottom = "4px";
+  line.style.color = "#52b788";
+  line.innerHTML = `<span style="font-weight:600;">AGENT:</span> ${text}`;
+  convoEl.appendChild(line);
+  convoEl.scrollTop = convoEl.scrollHeight;
+  while (convoEl.children.length > 100) {
+    convoEl.removeChild(convoEl.firstChild);
+  }
+}
 
 function setStatus(text, cls) {
   statusEl.textContent = text;
@@ -231,14 +276,17 @@ function handleEvent(event) {
 
   switch (event.type) {
     case "stt_chunk":
-      partialEl.textContent = event.transcript;
-      logEvent(`[${ts}] stt_chunk: ${event.transcript}`);
+      const sp = event.speaker || "UNKNOWN";
+      partialEl.innerHTML = `<span style="color:${speakerColor(sp)}; font-weight:600;">SPEAKER_${sp}:</span> ${event.transcript}`;
+      logEvent(`[${ts}] stt_chunk (${sp}): ${event.transcript}`);
       break;
     case "stt_output":
-      finalEl.textContent = event.transcript;
+      const sp2 = event.speaker || "UNKNOWN";
+      finalEl.innerHTML = `<span style="color:${speakerColor(sp2)}; font-weight:600;">SPEAKER_${sp2}:</span> ${event.transcript}`;
       partialEl.textContent = "—";
       agentEl.textContent = "—";
-      logEvent(`[${ts}] stt_output: ${event.transcript}`);
+      addConversationLine(sp2, event.transcript);
+      logEvent(`[${ts}] stt_output (${sp2}): ${event.transcript}`);
       break;
     case "agent_chunk":
       if (agentEl.textContent === "—") agentEl.textContent = "";
@@ -246,6 +294,7 @@ function handleEvent(event) {
       logEvent(`[${ts}] agent_chunk: ${event.text}`);
       break;
     case "agent_end":
+      addAgentLine(event.text);
       logEvent(`[${ts}] agent_end: ${event.text}`);
       break;
     case "tts_chunk":
