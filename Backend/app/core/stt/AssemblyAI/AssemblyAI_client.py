@@ -19,11 +19,17 @@ load_dotenv()
 
 
 class AssemblyAISTT:
-    def __init__(self, api_key: str | None = None, sample_rate: int = 16000):
+    def __init__(
+        self,
+        api_key: str | None = None,
+        sample_rate: int = 16000,
+        speech_model: str = "u3-rt-pro",
+    ):
         self.api_key = api_key or os.getenv("ASSEMBLYAI_API_KEY")
         if not self.api_key:
             raise ValueError("ASSEMBLYAI_API_KEY is not set")
         self.sample_rate = sample_rate
+        self.speech_model = speech_model
         self._ws: WebSocketClientProtocol | None = None
 
     async def send_audio(self, audio_chunk: bytes) -> None:
@@ -40,16 +46,20 @@ class AssemblyAISTT:
                 transcript = message.get("transcript", "")
                 if not transcript.strip():
                     continue
+                speaker = message.get("speaker_label", "UNKNOWN") or "UNKNOWN"
                 if message.get("end_of_turn"):
-                    yield STTOutputEvent.create(transcript)
+                    yield STTOutputEvent.create(transcript, speaker)
                 else:
-                    yield STTChunkEvent.create(transcript)
+                    yield STTChunkEvent.create(transcript, speaker)
 
     async def _ensure_connection(self) -> WebSocketClientProtocol:
         if self._ws is None:
             url = (
                 f"wss://streaming.assemblyai.com/v3/ws"
-                f"?sample_rate={self.sample_rate}&format_turns=true"
+                f"?sample_rate={self.sample_rate}"
+                f"&speech_model={self.speech_model}"
+                f"&format_turns=true"
+                f"&speaker_labels=true"
             )
             self._ws = await websockets.connect(
                 url,

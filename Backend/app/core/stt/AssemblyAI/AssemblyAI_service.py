@@ -9,16 +9,24 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import os
 from typing import AsyncIterator
+
+from dotenv import load_dotenv
 
 from app.core.stt.AssemblyAI.AssemblyAI_client import AssemblyAISTT
 from app.events import VoiceAgentEvent
+
+load_dotenv()
 
 
 async def stt_stream(
     audio_stream: AsyncIterator[bytes],
 ) -> AsyncIterator[VoiceAgentEvent]:
-    stt = AssemblyAISTT(sample_rate=16000)
+    stt = AssemblyAISTT(
+        sample_rate=16000,
+        speech_model=os.getenv("ASSEMBLYAI_SPEECH_MODEL", "u3-rt-pro"),
+    )
 
     async def send_audio():
         try:
