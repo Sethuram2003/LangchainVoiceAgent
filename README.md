@@ -306,7 +306,7 @@ Because every stage is a typed async-generator transform over `VoiceAgentEvent`,
 
 ## 📄 License
 
-This project is available under the **MIT License**. Add a `LICENSE` file to the repo root to make it official — the badge at the top links to this section until then.
+This project is available under the **MIT License**.
 
 ---
 
