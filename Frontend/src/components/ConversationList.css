@@ -1,0 +1,87 @@
+.convo {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--s4) var(--s4) var(--s2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+/* ── Empty state ── */
+.convo-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  color: var(--t3);
+}
+.convo-empty-icon {
+  opacity: 0.5;
+  margin-bottom: var(--s2);
+  color: var(--t2);
+}
+.convo-empty p {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--t2);
+}
+.convo-empty span {
+  font-size: var(--fs-sm);
+}
+
+/* ── Message rows ── */
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 82%;
+  animation: msg-in var(--dur) var(--ease);
+}
+.msg--agent { align-self: flex-end; }
+.msg--user { align-self: flex-start; }
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Bubble ── */
+.msg-bubble {
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--bd-subtle);
+  position: relative;
+}
+.msg-bubble--agent {
+  background: var(--agent-dim);
+  border-color: rgba(78,201,160,0.2);
+  border-bottom-right-radius: var(--r-sm);
+}
+.msg-bubble--user {
+  border-bottom-left-radius: var(--r-sm);
+}
+
+.msg-speaker {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--s1);
+}
+.msg-speaker--agent { color: var(--agent); }
+
+.msg-text {
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--t1);
+  word-break: break-word;
+}
+
+.msg-time {
+  font-size: var(--fs-xs);
+  color: var(--t3);
+  margin-top: var(--s1);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

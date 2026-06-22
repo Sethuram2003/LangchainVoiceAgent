@@ -1,0 +1,97 @@
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: var(--s4) var(--s5) var(--s6);
+  flex-shrink: 0;
+  gap: var(--s5);
+}
+
+.ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s1);
+  color: var(--t2);
+  transition: all var(--dur) var(--ease);
+  position: relative;
+}
+
+.ctrl-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Round buttons */
+.ctrl-mute, .ctrl-speaker {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--bd-subtle);
+  justify-content: center;
+}
+.ctrl-mute:hover, .ctrl-speaker:hover {
+  background: var(--card-hover);
+  border-color: var(--bd-default);
+}
+.ctrl-mute .ctrl-label, .ctrl-speaker .ctrl-label {
+  position: absolute;
+  bottom: -18px;
+}
+
+/* Active (toggled on) state */
+.ctrl-mute.active {
+  background: white;
+  color: var(--t-inv);
+  border-color: white;
+}
+.ctrl-speaker.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* When not in a call, speaker button should NOT be blue */
+.ctrl-speaker.active:not(:disabled) {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* Center call button */
+.ctrl-end, .ctrl-start {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  justify-content: center;
+}
+.ctrl-end {
+  background: var(--err);
+  color: white;
+  box-shadow: var(--glow-end);
+}
+.ctrl-end:hover { background: #ff5544; transform: scale(1.05); }
+.ctrl-end:active { transform: scale(0.95); }
+
+.ctrl-start {
+  background: var(--live);
+  color: white;
+  box-shadow: 0 0 30px rgba(52,199,89,0.3);
+  animation: call-pulse 2s ease-in-out infinite;
+}
+.ctrl-start:hover { background: #3dd968; transform: scale(1.05); }
+.ctrl-start:active { transform: scale(0.95); }
+
+@keyframes call-pulse {
+  0%, 100% { box-shadow: 0 0 30px rgba(52,199,89,0.3); }
+  50% { box-shadow: 0 0 45px rgba(52,199,89,0.5); }
+}
+
+/* Mute slash overlay */
+.ctrl-strike {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--err);
+  pointer-events: none;
+}

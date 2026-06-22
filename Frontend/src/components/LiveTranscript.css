@@ -1,0 +1,26 @@
+.live-tx {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s1);
+  padding: var(--s3) var(--s5);
+  text-align: center;
+  min-height: 44px;
+  justify-content: center;
+}
+
+.live-tx-speaker {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.live-tx-text {
+  font-size: var(--fs-base);
+  color: var(--t2);
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 300px;
+  word-break: break-word;
+}

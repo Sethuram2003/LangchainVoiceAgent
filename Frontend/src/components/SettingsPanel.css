@@ -1,0 +1,89 @@
+.settings-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease);
+  z-index: 50;
+}
+.settings-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-panel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  background: var(--card);
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+  padding: var(--s2) var(--s5) var(--s6);
+  z-index: 51;
+  transform: translateY(-100%);
+  transition: transform var(--dur-slow) var(--ease);
+  box-shadow: var(--sh-lg);
+}
+.settings-panel.open {
+  transform: translateY(0);
+}
+
+.settings-handle {
+  width: 36px; height: 4px;
+  border-radius: var(--r-full);
+  background: var(--bd-default);
+  margin: 0 auto var(--s4);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s5);
+}
+.settings-header h2 {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.settings-close {
+  width: 30px; height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--t2);
+  transition: background var(--dur-fast);
+}
+.settings-close:hover { background: var(--bd-subtle); }
+
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.settings-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--t2);
+}
+
+.settings-hint {
+  font-size: var(--fs-xs);
+  color: var(--t3);
+  line-height: 1.5;
+}
+.settings-hint code {
+  font-family: var(--mono);
+  background: var(--sunken);
+  padding: 1px 4px;
+  border-radius: var(--r-sm);
+  color: var(--accent-bright);
+}
