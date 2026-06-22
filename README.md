@@ -21,6 +21,8 @@
 [![Ollama](https://img.shields.io/badge/Ollama-000000?style=flat-square&logo=ollama&logoColor=white)](https://ollama.com/)
 [![AssemblyAI](https://img.shields.io/badge/AssemblyAI-1A1A2E?style=flat-square)](https://www.assemblyai.com/)
 [![Cartesia](https://img.shields.io/badge/Cartesia-FF5A5F?style=flat-square)](https://cartesia.ai/)
+[![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-realtime-purple?style=flat-square)](#)
 [![uv](https://img.shields.io/badge/uv-package_manager-DE5FE9?style=flat-square)](https://docs.astral.sh/uv/)
 
@@ -36,7 +38,7 @@ Speak into the browser client, and within a turn or two you'll hear a natural, l
 
 <div align="center">
 
-`real-time` · `streaming-stt` · `speaker-diarization` · `multi-speaker-tracking` · `llm-agent` · `streaming-tts` · `websocket` · `voice-ai` · `langchain-agent` · `local-llm` · `conversational-memory` · `zero-build-frontend`
+`real-time` · `streaming-stt` · `speaker-diarization` · `multi-speaker-tracking` · `llm-agent` · `streaming-tts` · `websocket` · `voice-ai` · `langchain-agent` · `local-llm` · `conversational-memory` · `react-frontend`
 
 </div>
 
@@ -114,7 +116,7 @@ This "stream-of-events, pass-through" design (see `app/events.py` and `app/main.
 - **Low-latency streaming TTS** via Cartesia's WebSocket API — synthesis starts as soon as a full agent reply is ready, returning raw PCM16 audio chunks (`tts_chunk`) for immediate playback.
 - **Single WebSocket, fully event-driven** — one `/ws` endpoint carries audio in and a typed JSON event stream out; no polling, no REST round-trips mid-call.
 - **Pluggable local or cloud LLM** — runs against any Ollama-compatible model (defaults to `glm-5.2:cloud`), so you can point it at a fully local model or a hosted one without touching the pipeline code.
-- **Zero-build frontend** — `Frontend/index.html` is a dependency-free test client: mic capture, PCM16 downsampling to 16kHz, live partial/final transcript display with per-speaker color coding, streaming agent text, and gapless TTS audio playback, all in vanilla JS.
+- **React phone-style frontend** — `Frontend/` is a Vite + React 19 single-page app styled as an iOS phone mockup: animated agent avatar with distinct states (idle, listening, thinking, speaking), color-coded chat bubbles per speaker, live partial transcript caption strip, phone-style call controls (mute, end call, speaker), and a settings panel for backend URL configuration. Audio capture downsamples to 16kHz PCM16; TTS playback is gapless via the Web Audio API.
 
 ## 🔄 Handling multi-speaker calls & handovers
 
@@ -161,7 +163,7 @@ All events are defined in `app/events.py` and serialized to JSON over the WebSoc
 | `agent_end` | Server → Client | `text` | The complete agent reply for that turn |
 | `tts_chunk` | Server → Client | `audio` (base64 PCM16 @ 24kHz) | A chunk of synthesized speech audio |
 
-The frontend's `handleEvent()` switch statement in `Frontend/index.html` shows a complete reference implementation for consuming this protocol — including gapless audio playback scheduling and per-speaker color-coded transcript rendering.
+The frontend's event handling is in `Frontend/src/App.jsx` — the `onEvent` callback subscribes to the WebSocket and dispatches by `event.type`. The React hooks (`useWebSocket`, `useAudioCapture`, `useAudioPlayback`, `useCallState`) provide a complete reference implementation for consuming this protocol, including gapless audio playback scheduling and per-speaker color-coded transcript rendering.
 
 ## 📁 Project structure
 
@@ -186,7 +188,31 @@ LangchainVoiceAgent/
 │               ├── Cartesia_Client.py     # Low-level Cartesia WS client
 │               └── Cartesia_Service.py    # agent-events-in → audio-events-out transform
 └── Frontend/
-    └── index.html                  # Zero-build browser test client
+    ├── package.json               # Vite + React 19 deps
+    ├── vite.config.js            # Dev server + /ws proxy to backend
+    ├── index.html                 # HTML entry point
+    └── src/
+        ├── main.jsx               # React root
+        ├── App.jsx                # Orchestrates hooks + components, event dispatch
+        ├── App.css                # App-level layout
+        ├── styles/
+        │   ├── variables.css      # Design tokens (colors, spacing, radii, motion)
+        │   └── global.css         # Reset, background, scrollbars, focus states
+        ├── hooks/
+        │   ├── useWebSocket.js    # WS lifecycle, event subscription, binary send
+        │   ├── useAudioCapture.js # Mic → 16kHz PCM s16le with downsampling
+        │   ├── useAudioPlayback.js # Seamless PCM @ 24kHz playback via Web Audio API
+        │   └── useCallState.js    # Call phase state machine (idle→listening→thinking→speaking)
+        ├── utils/
+        │   └── format.js          # Speaker color mapping, timestamp formatting
+        └── components/
+            ├── PhoneFrame.jsx + .css       # iOS-style device bezel (notch, home bar)
+            ├── StatusBar.jsx + .css        # Time, animated connection dot, phase label, settings
+            ├── AgentAvatar.jsx + .css      # 4-state animated avatar (breathing/ripple/dots/waveform)
+            ├── ConversationList.jsx + .css # Color-coded chat bubbles, auto-scroll, empty state
+            ├── LiveTranscript.jsx + .css   # Real-time partial transcript caption strip
+            ├── CallControls.jsx + .css     # Mute/speaker toggles + start/end call button
+            └── SettingsPanel.jsx + .css     # Slide-down overlay for backend URL config
 ```
 
 ## ⚙️ Setup
@@ -198,7 +224,8 @@ LangchainVoiceAgent/
 - An [AssemblyAI](https://www.assemblyai.com/) API key (streaming STT access)
 - A [Cartesia](https://cartesia.ai/) API key (streaming TTS access)
 - [Ollama](https://ollama.com/) running locally (or any Ollama-compatible endpoint), with your chosen model pulled
-- A modern browser with microphone access for the test client
+- A modern browser with microphone access for the frontend
+- Node.js 18+ and npm (for the React frontend)
 
 ### Install
 
@@ -247,18 +274,22 @@ cd Backend
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-**3. Open the frontend:**
+**3. Start the frontend:**
 ```bash
-open Frontend/index.html
+cd Frontend
+npm install
+npm run dev
 ```
 
-Click **Start Recording**, grant mic permission, and talk. You'll see:
-- live partial transcripts as you speak,
-- a finalized, speaker-colored transcript once you pause,
-- the agent's reply streaming in token by token,
-- and finally hear it spoken back through Cartesia TTS.
+Open http://localhost:5173 in your browser. You'll see:
 
-Have a second person speak into the same mic (or hand off the call) to see diarization assign a new speaker label and watch the agent ask for their name.
+- an iOS-style phone mockup with an animated agent avatar,
+- a status bar showing the call phase (Ready, Listening, Thinking, Speaking),
+- click the green call button to connect — the avatar animates as state changes,
+- live partial transcripts appear as a caption strip while you speak,
+- final transcripts and agent replies show as color-coded chat bubbles,
+- TTS audio plays back seamlessly through your speakers,
+- have a second person speak to see a new speaker color and the agent ask for their name.
 
 ## 🔁 How the pipeline streams
 
@@ -279,7 +310,7 @@ Each stage **passes through every event it receives** and *injects* its own new 
 - **No persistent speaker identity** — see [Handling multi-speaker calls & handovers](#handling-multi-speaker-calls--handovers) above. Identity is per-call, diarization-driven, and memory-only.
 - **No tool use configured** — `create_agent(..., tools=[])` is wired up but empty; the agent currently can't browse, calculate, or call external APIs out of the box. Add LangChain tools here to extend it.
 - **No authentication on the WebSocket** — `/ws` is open and CORS is wide open (`allow_origins=["*"]`) for local development; lock this down before deploying publicly.
-- **ScriptProcessorNode in the frontend** — the demo client uses the deprecated `createScriptProcessor` API for simplicity/compatibility. For production use, migrate to `AudioWorkletNode`.
+- **ScriptProcessorNode in the frontend** — the React app uses the deprecated `createScriptProcessor` API in `useAudioCapture` for simplicity/compatibility. For production use, migrate to `AudioWorkletNode`.
 - **Single LLM turn per final transcript** — the agent reacts once per `stt_output` (end-of-turn). Rapid interruptions or overlapping speech within a single AssemblyAI turn window are resolved by AssemblyAI's turn detection, not by application-level interruption handling.
 - **No automatic reconnection** — if the AssemblyAI or Cartesia WebSocket drops mid-call, the current implementation does not automatically retry; the pipeline will surface the resulting error.
 
