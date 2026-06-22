@@ -1,0 +1,28 @@
+/* App-level layout inside the phone screen. */
+.agent-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s4) var(--s4) var(--s2);
+  flex-shrink: 0;
+}
+
+.agent-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.error-banner {
+  margin: 0 var(--s5) var(--s2);
+  padding: var(--s2) var(--s3);
+  background: var(--err-dim);
+  border: 1px solid rgba(255,59,48,0.2);
+  border-radius: var(--r-md);
+  color: var(--err);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
