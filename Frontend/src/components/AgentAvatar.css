@@ -1,0 +1,132 @@
+.avatar {
+  position: relative;
+  width: 110px; height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.av-rings {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.av-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+}
+
+/* ── Idle ── */
+.avatar--idle .av-ring {
+  width: 72%; height: 72%;
+  opacity: 0.12;
+  animation: breathe 3.5s ease-in-out infinite;
+}
+.avatar--idle .r2 { animation-delay: 1.2s; }
+.avatar--idle .r3 { animation-delay: 2.4s; }
+.avatar--idle .av-core {
+  background: linear-gradient(135deg, #2c2c3e, #1e1e2e);
+  box-shadow: var(--sh-md);
+  color: var(--t3);
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.12; }
+  50% { transform: scale(1.08); opacity: 0.04; }
+}
+
+/* ── Listening ── */
+.avatar--listening .av-ring {
+  width: 72%; height: 72%;
+  animation: ripple 2s ease-out infinite;
+}
+.avatar--listening .r2 { animation-delay: 0.65s; }
+.avatar--listening .r3 { animation-delay: 1.3s; }
+.avatar--listening .av-core {
+  background: linear-gradient(135deg, var(--accent), #3a6fd6);
+  box-shadow: var(--glow-accent);
+  color: white;
+}
+
+@keyframes ripple {
+  0% { transform: scale(0.75); opacity: 0.55; border-width: 3px; }
+  100% { transform: scale(1.35); opacity: 0; border-width: 1px; }
+}
+
+/* ── Thinking ── */
+.avatar--agent_thinking .av-ring { display: none; }
+.avatar--agent_thinking .av-core {
+  background: linear-gradient(135deg, #f0a23a, #d68820);
+  box-shadow: 0 0 30px rgba(240,162,58,0.3);
+  color: white;
+}
+
+/* ── Speaking ── */
+.avatar--agent_speaking .av-ring { display: none; }
+.avatar--agent_speaking .av-core {
+  background: linear-gradient(135deg, var(--agent), #3a9a72);
+  box-shadow: var(--glow-agent);
+  color: white;
+}
+
+/* ── Core circle ── */
+.av-core {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: all var(--dur-slow) var(--ease);
+}
+
+/* ── Waveform ── */
+.av-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 22px;
+}
+.av-wave span {
+  width: 3px;
+  height: 100%;
+  background: white;
+  border-radius: 2px;
+  animation: wave 0.7s ease-in-out infinite;
+}
+.av-wave span:nth-child(1) { animation-delay: 0s; }
+.av-wave span:nth-child(2) { animation-delay: 0.1s; }
+.av-wave span:nth-child(3) { animation-delay: 0.2s; }
+.av-wave span:nth-child(4) { animation-delay: 0.1s; }
+.av-wave span:nth-child(5) { animation-delay: 0s; }
+
+@keyframes wave {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
+
+/* ── Thinking dots ── */
+.av-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.av-dots span {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: white;
+  animation: bounce 1.4s ease-in-out infinite;
+}
+.av-dots span:nth-child(2) { animation-delay: 0.2s; }
+.av-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.35; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
