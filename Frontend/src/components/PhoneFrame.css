@@ -59,6 +59,8 @@
   flex-direction: column;
   position: relative;
   padding-top: var(--notch-h);
+  overflow: hidden;
+  min-height: 0;
 }
 
 .home-bar {
