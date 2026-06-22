@@ -1,0 +1,56 @@
+/* Global reset + base.
+ * Phone centered on a deep gradient with subtle dot grid.
+ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root { height: 100%; overflow: hidden; }
+
+body {
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  color: var(--t1);
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 0%, var(--bg-grad-1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, #1a1024 0%, transparent 50%),
+    var(--bg-deep);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 0);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+#root { display: flex; align-items: center; justify-content: center; }
+
+button {
+  font: inherit; color: inherit; background: none; border: none;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+button:disabled { cursor: not-allowed; opacity: 0.35; }
+
+::-webkit-scrollbar { width: 0; height: 0; }
+
+input, select {
+  font: inherit; color: var(--t1); background: var(--card);
+  border: 1px solid var(--bd-default); border-radius: var(--r-md);
+  padding: var(--s2) var(--s3); outline: none;
+  transition: border var(--dur-fast), box-shadow var(--dur-fast);
+}
+input:focus, select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring);
+}
+input::placeholder { color: var(--t3); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; transition-duration: 0.01ms !important;
+  }
+}

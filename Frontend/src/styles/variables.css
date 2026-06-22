@@ -1,0 +1,97 @@
+/* Design tokens — professional dark phone UI.
+ * One file, one source of truth. Every component references these.
+ */
+:root {
+  /* ── Surfaces ─────────────────────────── */
+  --bg-deep: #08080f;
+  --bg-grad-1: #14142a;
+  --bg-grad-2: #0e0e1a;
+  --bezel: linear-gradient(145deg, #28283e, #0e0e1a 60%, #1a1a28);
+  --screen: #0b0b14;
+  --card: #15151f;
+  --card-hover: #1c1c2a;
+  --sunken: #06060c;
+
+  /* ── Borders ──────────────────────────── */
+  --bd-faint: rgba(255,255,255,0.04);
+  --bd-subtle: rgba(255,255,255,0.07);
+  --bd-default: rgba(255,255,255,0.12);
+  --bd-strong: rgba(255,255,255,0.2);
+
+  /* ── Text ────────────────────────────── */
+  --t1: #f0f0f5;
+  --t2: #9a9aa8;
+  --t3: #5a5a68;
+  --t-inv: #0b0b14;
+
+  /* ── Accent ──────────────────────────── */
+  --accent: #5b8def;
+  --accent-bright: #7ba5ff;
+  --accent-dim: rgba(91,141,239,0.15);
+  --accent-ring: rgba(91,141,239,0.4);
+
+  /* ── Agent ───────────────────────────── */
+  --agent: #4ec9a0;
+  --agent-bright: #6fe0b8;
+  --agent-dim: rgba(78,201,160,0.12);
+  --agent-ring: rgba(78,201,160,0.35);
+
+  /* ── Call states ─────────────────────── */
+  --live: #34c759;
+  --live-dim: rgba(52,199,89,0.15);
+  --wait: #ffd60a;
+  --wait-dim: rgba(255,214,10,0.15);
+  --err: #ff3b30;
+  --err-dim: rgba(255,59,48,0.12);
+  --off: #5a5a68;
+  --off-dim: rgba(90,90,104,0.15);
+
+  /* ── Speakers ────────────────────────── */
+  --sp-a: #5b8def; --sp-a-bg: rgba(91,141,239,0.1);
+  --sp-b: #f0a23a; --sp-b-bg: rgba(240,162,58,0.1);
+  --sp-c: #4ec9a0; --sp-c-bg: rgba(78,201,160,0.1);
+  --sp-d: #e06b8a; --sp-d-bg: rgba(224,107,138,0.1);
+  --sp-x: #5a5a68; --sp-x-bg: rgba(90,90,104,0.1);
+
+  /* ── Typography ──────────────────────── */
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  --mono: 'SF Mono', 'Menlo', monospace;
+  --fs-xs: 10px;
+  --fs-sm: 12px;
+  --fs-base: 14px;
+  --fs-md: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-2xl: 28px;
+
+  /* ── Spacing (4px grid) ──────────────── */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px;
+  --s5: 20px; --s6: 24px; --s7: 32px; --s8: 40px;
+
+  /* ── Radii ────────────────────────────── */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-full: 999px;
+
+  /* ── Shadows ─────────────────────────── */
+  --sh-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --sh-md: 0 4px 16px rgba(0,0,0,0.35);
+  --sh-lg: 0 20px 60px rgba(0,0,0,0.5);
+  --glow-accent: 0 0 30px rgba(91,141,239,0.35);
+  --glow-agent: 0 0 30px rgba(78,201,160,0.3);
+  --glow-end: 0 0 30px rgba(255,59,48,0.35);
+
+  /* ── Motion ──────────────────────────── */
+  --ease: cubic-bezier(0.16,1,0.3,1);
+  --ease-io: cubic-bezier(0.4,0,0.2,1);
+  --dur-fast: 100ms;
+  --dur: 220ms;
+  --dur-slow: 400ms;
+
+  /* ── Phone dims ──────────────────────── */
+  --pw: 380px;
+  --ph: 800px;
+  --pb: 10px;
+  --pc: 48px;
+  --notch-w: 110px;
+  --notch-h: 26px;
+  --bar-h: 42px;
+}
