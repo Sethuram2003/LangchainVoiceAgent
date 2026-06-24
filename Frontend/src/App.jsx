@@ -16,6 +16,7 @@ let msgId = 0
 
 export default function App() {
   const [backendUrl, setBackendUrl] = useState('ws://localhost:8000/ws')
+  const [ttsProvider, setTtsProvider] = useState('cartesia')
   const [wsUrl, setWsUrl] = useState(null)
   const [inCall, setInCall] = useState(false)
   const [muted, setMuted] = useState(false)
@@ -86,7 +87,7 @@ export default function App() {
           agentBufRef.current = ''
           break
         case 'tts_chunk':
-          if (speakerOn) play(event.audio)
+          if (speakerOn) play(event.audio, event.sample_rate || 24000)
           break
         default:
           break
@@ -97,11 +98,12 @@ export default function App() {
 
   // Start call: connect WebSocket, then start mic.
   const startCall = useCallback(() => {
-    setWsUrl(backendUrl)
+    // Append TTS provider as query param.
+    const sep = backendUrl.includes('?') ? '&' : '?'
+    setWsUrl(`${backendUrl}${sep}tts=${ttsProvider}`)
     setInCall(true)
-    // Give the WebSocket a moment to connect before starting mic.
     setTimeout(() => startMic(), 300)
-  }, [backendUrl, startMic])
+  }, [backendUrl, ttsProvider, startMic])
 
   // End call: stop mic, close WebSocket, stop playback.
   const endCall = useCallback(() => {
@@ -172,6 +174,8 @@ export default function App() {
         onClose={() => setSettingsOpen(false)}
         backendUrl={backendUrl}
         onBackendUrlChange={setBackendUrl}
+        ttsProvider={ttsProvider}
+        onTtsProviderChange={setTtsProvider}
       />
     </PhoneFrame>
   )

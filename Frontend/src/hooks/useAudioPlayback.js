@@ -1,7 +1,8 @@
-/** useAudioPlayback — seamless PCM s16le @ 24kHz playback via Web Audio API. */
+/** useAudioPlayback — seamless PCM s16le playback via Web Audio API.
+ * The sample rate is provided per-chunk by the backend (Cartesia=24000,
+ * Miso=variable). We recreate the AudioContext if the rate changes.
+ */
 import { useCallback, useEffect, useRef, useState } from 'react'
-
-const RATE = 24000
 
 function b64ToF32(b64) {
   const bin = atob(b64)
@@ -17,20 +18,29 @@ function b64ToF32(b64) {
 export function useAudioPlayback() {
   const [isPlaying, setIsPlaying] = useState(false)
   const ctxRef = useRef(null)
+  const currentRateRef = useRef(0)
   const nextTimeRef = useRef(0)
   const activeRef = useRef(0)
 
-  const ensureCtx = useCallback(() => {
-    if (!ctxRef.current) ctxRef.current = new AudioContext({ sampleRate: RATE })
+  const ensureCtx = useCallback((sampleRate) => {
+    // Recreate context if sample rate changed (e.g. switching TTS providers).
+    if (ctxRef.current && currentRateRef.current !== sampleRate) {
+      try { ctxRef.current.close() } catch {}
+      ctxRef.current = null
+    }
+    if (!ctxRef.current) {
+      ctxRef.current = new AudioContext({ sampleRate })
+      currentRateRef.current = sampleRate
+    }
     if (ctxRef.current.state === 'suspended') ctxRef.current.resume()
     return ctxRef.current
   }, [])
 
-  const play = useCallback((b64) => {
+  const play = useCallback((b64, sampleRate = 24000) => {
     if (!b64) return
-    const ctx = ensureCtx()
+    const ctx = ensureCtx(sampleRate)
     const f32 = b64ToF32(b64)
-    const buf = ctx.createBuffer(1, f32.length, RATE)
+    const buf = ctx.createBuffer(1, f32.length, sampleRate)
     buf.copyToChannel(f32, 0)
     const src = ctx.createBufferSource()
     src.buffer = buf
@@ -51,6 +61,7 @@ export function useAudioPlayback() {
     if (ctxRef.current) { ctxRef.current.close(); ctxRef.current = null }
     nextTimeRef.current = 0
     activeRef.current = 0
+    currentRateRef.current = 0
     setIsPlaying(false)
   }, [])
 
