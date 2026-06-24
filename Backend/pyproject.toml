@@ -16,15 +16,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-miso = [
-    "torch>=2.0.0",
-    "torchaudio>=2.0.0",
-    "transformers>=4.40.0",
-    "accelerate>=0.30.0",
-    "soundfile>=0.12.0",
-    "numpy>=1.24.0",
-    "huggingface-hub>=0.20.0",
-]
+# Miso TTS runs as a separate server in its own Python 3.10 venv.
+# See Backend/MisoTTS/server.py for setup instructions.
+# No extra deps needed in the Backend venv — the client calls the server over HTTP.
 
 [tool.ruff]
 line-length = 88

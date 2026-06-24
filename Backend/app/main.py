@@ -29,16 +29,14 @@ async def lifespan(app: FastAPI):
     # --- Agent (always loaded) ---
     init_agent()
 
-    # --- Miso TTS (only if miso extras are installed) ---
+    # --- Miso TTS (checks if the separate Miso server is running on :9100) ---
     miso_available = False
     try:
-        from app.core.tts.Miso.Miso_Client import init_pipeline
+        from app.core.tts.Miso.Miso_Client import init_pipeline, is_available
         init_pipeline()
-        miso_available = True
-    except ImportError:
-        print("[miso] Not installed — skip. Install with: uv sync --extra miso")
+        miso_available = is_available()
     except Exception as e:
-        print(f"[miso] Init failed: {e}")
+        print(f"[miso] Init check failed: {e}")
 
     # Store availability on app state so the WS endpoint can check.
     app.state.miso_available = miso_available
