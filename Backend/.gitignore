@@ -1,0 +1,5 @@
+# Ignore MisoTTS venv and generated files (the repo itself is cloned, not ours)
+MisoTTS/.venv/
+MisoTTS/*.wav
+MisoTTS/.env
+MisoTTS/__pycache__/
