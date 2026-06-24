@@ -2,24 +2,56 @@
 
 Audio bytes -> AssemblyAI STT -> LangChain agent -> TTS -> audio bytes.
 Supports pluggable TTS: Cartesia (cloud, streaming) or Miso (local, batch).
+
+All heavy initialization (agent model, TTS pipelines) happens in the FastAPI
+lifespan context manager at startup — not on the first WebSocket connection.
 """
 
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
-from contextlib import suppress
+from contextlib import asynccontextmanager, suppress
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.agent.agent import agent_stream
+from app.core.agent.agent import agent_stream, init_agent
 from app.core.stt.AssemblyAI.AssemblyAI_service import stt_stream
 from app.events import VoiceAgentEvent, event_to_dict
 
 load_dotenv()
 
-app = FastAPI(title="LangChain Voice Agent Backend")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup: initialize models. Shutdown: clean up."""
+    # --- Agent (always loaded) ---
+    init_agent()
+
+    # --- Miso TTS (only if miso extras are installed) ---
+    miso_available = False
+    try:
+        from app.core.tts.Miso.Miso_Client import init_pipeline
+        init_pipeline()
+        miso_available = True
+    except ImportError:
+        print("[miso] Not installed — skip. Install with: uv sync --extra miso")
+    except Exception as e:
+        print(f"[miso] Init failed: {e}")
+
+    # Store availability on app state so the WS endpoint can check.
+    app.state.miso_available = miso_available
+    print(f"[startup] Miso available: {miso_available}")
+    print("[startup] Voice agent backend ready.")
+
+    yield
+
+    # --- Shutdown ---
+    print("[shutdown] Voice agent backend stopping.")
+
+
+app = FastAPI(title="LangChain Voice Agent Backend", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -57,6 +89,11 @@ async def websocket_endpoint(
     websocket: WebSocket,
     tts: str = Query("cartesia", description="TTS provider: cartesia or miso"),
 ) -> None:
+    # If the user asked for Miso but it's not available, fall back to Cartesia.
+    if tts == "miso" and not getattr(websocket.app.state, "miso_available", False):
+        print(f"[ws] Miso not available, falling back to Cartesia.")
+        tts = "cartesia"
+
     await websocket.accept()
 
     async def websocket_audio_stream() -> AsyncIterator[bytes]:
@@ -82,6 +119,7 @@ async def health():
         "status": "ok",
         "pipeline": "stt -> agent -> tts",
         "tts_providers": ["cartesia", "miso"],
+        "miso_available": getattr(app.state, "miso_available", False),
     }
 
 
