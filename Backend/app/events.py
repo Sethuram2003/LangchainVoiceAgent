@@ -95,11 +95,12 @@ class TTSChunkEvent:
 
     type: Literal["tts_chunk"]
     audio: bytes
+    sample_rate: int
     ts: int
 
     @classmethod
-    def create(cls, audio: bytes) -> "TTSChunkEvent":
-        return cls(type="tts_chunk", audio=audio, ts=_now_ms())
+    def create(cls, audio: bytes, sample_rate: int = 24000) -> "TTSChunkEvent":
+        return cls(type="tts_chunk", audio=audio, sample_rate=sample_rate, ts=_now_ms())
 
 
 VoiceAgentEvent = Union[UserInputEvent, STTEvent, AgentEvent, TTSChunkEvent]
@@ -120,5 +121,5 @@ def event_to_dict(event: VoiceAgentEvent) -> dict:
         return {"type": event.type, "text": event.text, "ts": event.ts}
     if isinstance(event, TTSChunkEvent):
         audio_b64 = base64.b64encode(event.audio).decode("ascii")
-        return {"type": event.type, "audio": audio_b64, "ts": event.ts}
+        return {"type": event.type, "audio": audio_b64, "sample_rate": event.sample_rate, "ts": event.ts}
     raise ValueError(f"Unknown event type: {type(event)}")

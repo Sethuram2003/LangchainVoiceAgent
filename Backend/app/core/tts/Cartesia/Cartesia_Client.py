@@ -73,7 +73,7 @@ class CartesiaTTS:
             if msg_type == "chunk" and message.get("data"):
                 audio = base64.b64decode(message["data"])
                 if audio:
-                    yield TTSChunkEvent.create(audio)
+                    yield TTSChunkEvent.create(audio, self.sample_rate)
             elif msg_type == "done":
                 return
             elif msg_type == "error":
