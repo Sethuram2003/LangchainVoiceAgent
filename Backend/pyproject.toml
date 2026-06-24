@@ -1,7 +1,7 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = "LangChain voice agent backend with AssemblyAI STT, Ollama agent, and Cartesia TTS"
+description = "LangChain voice agent backend with AssemblyAI STT, Ollama agent, Cartesia TTS, and optional Miso One local TTS"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -13,6 +13,16 @@ dependencies = [
     "langchain-core>=1.0.0",
     "langchain-ollama>=1.0.0",
     "langgraph>=1.0.0",
+]
+
+[project.optional-dependencies]
+miso = [
+    "torch>=2.0.0",
+    "torchaudio>=2.0.0",
+    "transformers>=4.40.0",
+    "accelerate>=0.30.0",
+    "soundfile>=0.12.0",
+    "numpy>=1.24.0",
 ]
 
 [tool.ruff]
