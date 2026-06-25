@@ -53,12 +53,12 @@ export function SettingsPanel({
                 <span className="tts-option-desc">Cloud streaming, low latency</span>
               </button>
               <button
-                className={`tts-option ${ttsProvider === 'miso' ? 'active' : ''}`}
-                onClick={() => onTtsProviderChange('miso')}
+                className={`tts-option ${ttsProvider === 'kokoro' ? 'active' : ''}`}
+                onClick={() => onTtsProviderChange('kokoro')}
               >
                 <div className="tts-option-header">
-                  <span className="tts-option-name">Miso One</span>
-                  {ttsProvider === 'miso' && (
+                  <span className="tts-option-name">kokoro One</span>
+                  {ttsProvider === 'kokoro' && (
                     <span className="tts-check">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"

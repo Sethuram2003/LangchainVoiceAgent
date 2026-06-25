@@ -1,7 +1,7 @@
-"""Miso TTS transform: Voice events -> Voice events (with audio).
+"""Kokoro TTS transform: Voice events -> Voice events (with audio).
 
-Same pattern as Cartesia_Service but uses the local MisoTTS client.
-Accumulates agent_chunk tokens and, on agent_end, synthesizes via Miso One.
+Same pattern as Cartesia_Service but uses the local KokoroTTS client.
+Accumulates agent_chunk tokens and, on agent_end, synthesizes via Kokoro.
 Audio is yielded as TTSChunkEvent chunks.
 """
 
@@ -11,14 +11,14 @@ import asyncio
 import contextlib
 from typing import AsyncIterator
 
-from app.core.tts.Miso.Miso_Client import MisoTTS
+from app.core.tts.Kokoro.Kokoro_Client import KokoroTTS
 from app.events import VoiceAgentEvent
 
 
 async def tts_stream(
     event_stream: AsyncIterator[VoiceAgentEvent],
 ) -> AsyncIterator[VoiceAgentEvent]:
-    tts = MisoTTS()
+    tts = KokoroTTS()
     queue: asyncio.Queue[VoiceAgentEvent | None] = asyncio.Queue()
     text_buffer: list[str] = []
 
@@ -35,7 +35,7 @@ async def tts_stream(
         finally:
             await queue.put(None)
 
-    async def pump_miso():
+    async def pump_kokoro():
         try:
             while True:
                 async for tts_event in tts.receive_events():
@@ -43,12 +43,12 @@ async def tts_stream(
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            print(f"Miso TTS error: {e}")
+            print(f"Kokoro TTS error: {e}")
         finally:
             await queue.put(None)
 
     upstream_task = asyncio.create_task(pump_upstream())
-    miso_task = asyncio.create_task(pump_miso())
+    kokoro_task = asyncio.create_task(pump_kokoro())
     sentinels = 0
 
     try:
@@ -57,14 +57,14 @@ async def tts_stream(
             if event is None:
                 sentinels += 1
                 if sentinels == 1:
-                    miso_task.cancel()
+                    kokoro_task.cancel()
                 continue
             yield event
     finally:
         upstream_task.cancel()
-        miso_task.cancel()
+        kokoro_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await upstream_task
         with contextlib.suppress(asyncio.CancelledError):
-            await miso_task
+            await kokoro_task
         await tts.close()

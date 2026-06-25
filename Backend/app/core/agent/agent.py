@@ -26,7 +26,6 @@ load_dotenv()
 _OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 _OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "glm-5.2:cloud")
 
-# Module-level holder — populated by init_agent() during app startup.
 _agent = None
 
 

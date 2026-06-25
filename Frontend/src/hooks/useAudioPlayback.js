@@ -1,6 +1,6 @@
 /** useAudioPlayback — seamless PCM s16le playback via Web Audio API.
  * The sample rate is provided per-chunk by the backend (Cartesia=24000,
- * Miso=variable). We recreate the AudioContext if the rate changes.
+ * kokoro=variable). We recreate the AudioContext if the rate changes.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 
